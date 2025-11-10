@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 export const supabase = createClient(
   import.meta.env.SUPABASE_URL,
