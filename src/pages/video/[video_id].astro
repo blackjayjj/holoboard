@@ -41,7 +41,7 @@ const formattedAverageYen = yenFormatter.format(average_yen);
 const chartTimeSeries: { x: string; y: number }[] = [];
 
 [
-  { minute_timestamp: cumSums[0].minute_timestamp, cumulative_yen: 0 },
+  { minute_timestamp: cumSums[0]?.minute_timestamp || 0, cumulative_yen: 0 },
   ...cumSums,
 ].forEach((row) => {
   chartTimeSeries.push({
