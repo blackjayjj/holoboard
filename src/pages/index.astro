@@ -1,9 +1,7 @@
 ---
-import Welcome from "../components/Welcome.astro";
 import Card from "../components/Card.astro";
 import Layout from "../layouts/Layout.astro";
 import {
-  getVideos,
   getDailyYenAmount,
   getYenByName,
   getTopVideos,
@@ -16,210 +14,19 @@ import { channelIdToNameMap } from "../lib/streamers";
 import SummaryTable from "../components/SummaryTable.astro";
 import TopDonors from "../components/TopDonors.astro";
 import TabVideo from "../components/TabVideo.astro";
-import { yenFormatter, formatNumberCompact } from "../lib/formatters";
+import { formatNumberCompact } from "../lib/formatters";
 
-// const data = await getDailyYenAmount();
-// const chartLabels = data.map((row) => row.sale_date);
-const plotlyXData = [
-  "2025-10-20",
-  "2025-10-21",
-  "2025-10-22",
-  "2025-10-23",
-  "2025-10-24",
-  "2025-10-25",
-  "2025-10-26",
-  "2025-10-27",
-  "2025-10-28",
-  "2025-10-29",
-  "2025-10-30",
-  "2025-10-31",
-];
-const plotlyYData = [
-  1123831, 1290395, 948592, 1025866, 741710, 1383751, 1547230, 965507, 1160446,
-  847568, 754110, 1267884,
-];
-// const yenByName = await getYenByName()
-const yenByName = [
-  { chat_name: "Sloth of Shadows", total_yen: 222870 },
-  { chat_name: "@Generix90", total_yen: 212700 },
-  { chat_name: "パーシス", total_yen: 200098 },
-  { chat_name: "無色の警備係", total_yen: 150000 },
-  { chat_name: "MAIMAI", total_yen: 143510 },
-  { chat_name: "zipli", total_yen: 119943 },
-  { chat_name: "@dan_game_ch", total_yen: 110000 },
-  { chat_name: "なの", total_yen: 106750 },
-  { chat_name: "Wrixne Lenti", total_yen: 104141 },
-  { chat_name: "@musyoku_no", total_yen: 101000 },
-];
-// const topVideos = await getTopVideos();
-const topVideos = [
-  {
-    video_id: "LbOsSfvDQhM",
-    video_title:
-      '【 雑談/Freetalk 】"SHINier"お疲れ様！！本当にありがとう！！【 常闇トワ / ホロライブ 】',
-    video_timestamp: "2025-11-02T13:36:47.756+00:00",
-    total_yen: 1586584,
-  },
-  {
-    video_id: "pmk8AL3P4m8",
-    video_title:
-      "【 Minecraft 】1周年カウントダウンとホロ鯖ゆったり観光！！【#綺々羅々ヴィヴィ #hololiveDEV IS #FLOWGLOW】",
-    video_timestamp: "2025-11-08T10:55:27.171+00:00",
-    total_yen: 894570,
-  },
-  {
-    video_id: "qoNEDzHqAuU",
-    video_title:
-      "【新衣装お披露目】遂にこの時が来た…ッ！！【百鬼あやめ/ホロライブ】",
-    video_timestamp: "2025-11-02T13:33:24.844+00:00",
-    total_yen: 743730,
-  },
-  {
-    video_id: "LmaO6MRTI-s",
-    video_title:
-      "【 🟣雑談 】二ヶ月お休み頂いてました😸【 猫又おかゆ/ホロライブ 】",
-    video_timestamp: "2025-11-02T13:33:16.983+00:00",
-    total_yen: 703944,
-  },
-  {
-    video_id: "P1p8y5bF5Jw",
-    video_title:
-      "【CloverPit】前回引いたフィーバータイムを継続させて１周年みんなとむかえるぞ🎰🔥【ホロライブ DEV IS 響咲リオナ】",
-    video_timestamp: "2025-11-08T11:32:35.114+00:00",
-    total_yen: 674460,
-  },
-  {
-    video_id: "-7bedX7qbhE",
-    video_title:
-      "【雑談/chat】遂に1周年ですってよ！！！一緒に向かえよ～～【#輪堂千速 / #hololivedev is  #FLOWGLOW 】",
-    video_timestamp: "2025-11-08T13:43:45.068+00:00",
-    total_yen: 493673,
-  },
-  {
-    video_id: "WfGS8QW-b40",
-    video_title: "【3D LIVE】LOG IN: GAME START #ROCKINBiboo",
-    video_timestamp: "2025-11-02T13:35:47.56+00:00",
-    total_yen: 490111,
-  },
-  {
-    video_id: "QmpfwGfZEi4",
-    video_title:
-      "【CHATTINI DAY: 3D SPECIAL】IT'S CHATTINI APPRECIATION DAY!!! 🩵 YAAAY! + ANNOUNCEMENT",
-    video_timestamp: "2025-10-19T12:09:57+00:00",
-    total_yen: 464894,
-  },
-  {
-    video_id: "2PwZmb5inxY",
-    video_title:
-      "【マリオカート8DX】1周年カウントダウン参加型❕1位目指す❕✨【水宮枢／ホロライブDEV IS】",
-    video_timestamp: "2025-11-07T14:00:55.255+00:00",
-    total_yen: 458058,
-  },
-  {
-    video_id: "vl-RzysAA8Y",
-    video_title:
-      "【GIGI MURIN BDAY 2025】A PARTY AFTER A PARTY?!?! LIKE AN AFTERPARTY?!?",
-    video_timestamp: "2025-10-21T21:03:08.67+00:00",
-    total_yen: 383830,
-  },
-];
+const dailyYenAmounts = await getDailyYenAmount();
+const plotlyXData = dailyYenAmounts.map(obj => obj.sale_date);
+const plotlyYData = dailyYenAmounts.map(obj => obj.total_yen);
+const yenByName = await getYenByName()
+const topVideos = await getTopVideos();
 
-// const topChannels = await getTopChannels();
-const topChannels = [
-  { channel_id: "UC1uv2Oq6kNxgATlCiez59hw", total_yen: 1940125 },
-  { channel_id: "UCGzTVXqMQHa4AgJVJIVvtDQ", total_yen: 1824191 },
-  { channel_id: "UC9p_lqQ0FEDz327Vgf5JwqA", total_yen: 1567352 },
-  { channel_id: "UC6eWCld0KwmyHFbAqK3V-Rw", total_yen: 1388284 },
-  { channel_id: "UCL_qhgtOy0dy1Agp8vkySQg", total_yen: 1199658 },
-  { channel_id: "UC9LSiN9hXI55svYEBrrK-tw", total_yen: 1058932 },
-  { channel_id: "UC0TXe_LYZ4scaW2XMyi5_kw", total_yen: 1011374 },
-  { channel_id: "UCqm3BQLlJfvkTsX_hvm0UmA", total_yen: 984356 },
-  { channel_id: "UCDHABijvPBnJm7F-KlNME3w", total_yen: 964652 },
-  { channel_id: "UCjk2nKmHzgH5Xy-C5qYRd5A", total_yen: 952520 },
-];
-// const recentVideos = await getRecentVideos();
-const recentVideos = [
-  {
-    id: "3O4jBkgdWRQ",
-    video_timestamp: "2025-12-30T21:14:15+00:00",
-    channel_id: "UCO_aKKYxn4tvrqPjcTzZ6EQ",
-    title: "【MINECRAFT】 THE GRAND FINALE. THE WORLD TREE IS COMPLETE",
-    total_yen: 0,
-  },
-  {
-    id: "XNiRgmK54Hg",
-    video_timestamp: "2025-12-29T23:24:06+00:00",
-    channel_id: "UCO_aKKYxn4tvrqPjcTzZ6EQ",
-    title: "Drawing Hololive Members From Memory with @GawrGura !",
-    total_yen: 0,
-  },
-  {
-    id: "uUwP1UYbYcU",
-    video_timestamp: "2025-11-08T18:00:53.698+00:00",
-    channel_id: "UCgnfPPb9JI3e9A4cXHnWbyg",
-    title: "Cursed Auction: Curator Keeps Collecting Haunted Items!",
-    total_yen: 153045,
-  },
-  {
-    id: "LczdUQYusak",
-    video_timestamp: "2025-11-08T15:06:50.249+00:00",
-    channel_id: "UChgTyjG-pdNvxxhdsXfHQ5Q",
-    title:
-      "#2【Urban Myth Dissolution Center】THROWS TOMATOES AT YOU【Pavolia Reine/hololiveID】",
-    total_yen: 24748,
-  },
-  {
-    id: "oea8O2eImgo",
-    video_timestamp: "2025-11-08T13:52:30.254+00:00",
-    channel_id: "UCFKOVgVbGmX65RxO3EtH3iw",
-    title:
-      "【雑談】この枠がぐるぐるだったら諦める！！【 雪花ラミィ /ホロライブ】",
-    total_yen: 45032,
-  },
-  {
-    id: "-7bedX7qbhE",
-    video_timestamp: "2025-11-08T13:43:45.068+00:00",
-    channel_id: "UCKMWFR6lAstLa7Vbf5dH7ig",
-    title:
-      "【雑談/chat】遂に1周年ですってよ！！！一緒に向かえよ～～【#輪堂千速 / #hololivedev is  #FLOWGLOW 】",
-    total_yen: 493673,
-  },
-  {
-    id: "QKjMh_IkEZY",
-    video_timestamp: "2025-11-08T13:07:48.727+00:00",
-    channel_id: "UCOyYb1c43VlX9rc_lT6NKQw",
-    title: "Camper Van Java",
-    total_yen: 1141,
-  },
-  {
-    id: "IL5J_ExYeMw",
-    video_timestamp: "2025-11-08T12:08:43.976+00:00",
-    channel_id: "UCp6993wxpyDPHUpavwDFqgg",
-    title: "【祝MV１００万再生】ありがとうPulse歌枠【ホロライブ/ときのそら】",
-    total_yen: 26998,
-  },
-  {
-    id: "P1p8y5bF5Jw",
-    video_timestamp: "2025-11-08T11:32:35.114+00:00",
-    channel_id: "UC9LSiN9hXI55svYEBrrK-tw",
-    title:
-      "【CloverPit】前回引いたフィーバータイムを継続させて１周年みんなとむかえるぞ🎰🔥【ホロライブ DEV IS 響咲リオナ】",
-    total_yen: 674460,
-  },
-  {
-    id: "pmk8AL3P4m8",
-    video_timestamp: "2025-11-08T10:55:27.171+00:00",
-    channel_id: "UCGzTVXqMQHa4AgJVJIVvtDQ",
-    title:
-      "【 Minecraft 】1周年カウントダウンとホロ鯖ゆったり観光！！【#綺々羅々ヴィヴィ #hololiveDEV IS #FLOWGLOW】",
-    total_yen: 894570,
-  },
-];
+const topChannels = await getTopChannels();
+const recentVideos = await getRecentVideos();
 
-// const superchatCount = await getSuperchatCount()
-const superchatCount = 22942;
-// const videoCount = await getUniqueVideoCount()
-const videoCount = 793;
+const superchatCount = await getSuperchatCount()
+const videoCount = await getUniqueVideoCount()
 ---
 
 <Layout title="holoboard">
@@ -229,7 +36,7 @@ const videoCount = 793;
         {
           text: formatNumberCompact(
             plotlyYData.reduce(
-              (accumulator, currentValue) => accumulator + currentValue,
+              (accumulator: number, currentValue: number) => accumulator + currentValue,
               0
             )
           ),

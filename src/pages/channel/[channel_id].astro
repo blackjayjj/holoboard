@@ -32,74 +32,10 @@ type PageProps = InferGetStaticPropsType<typeof getStaticPaths>;
 const streamer: PageProps = Astro.props;
 
 const channelId = streamer.url.split("/").pop() as string;
-// const topDonor = await getChannelSuperchatTopDonor(channelId);
-const topDonor = [
-  { donor_name: "@mysticdonuts", total_yen: 24438 },
-  { donor_name: "@bunkerzero", total_yen: 19360 },
-  { donor_name: "@Senko445", total_yen: 16781 },
-  { donor_name: "@ADualistPlays", total_yen: 15282 },
-  { donor_name: "@Kaizen_Zen56", total_yen: 13962 },
-  { donor_name: "@IngramPlisken", total_yen: 9147 },
-  { donor_name: "@ijustwantedtocommentbutnow526", total_yen: 7853 },
-  { donor_name: "@PixelxAffection", total_yen: 7640 },
-  { donor_name: "@brawlflowers", total_yen: 7178 },
-  { donor_name: "@Crush1084", total_yen: 7016 },
-];
-// const data  = await getChannelSuperchatSummary(channelId);
-const data = [
-  {
-    video_id: "jLqwFhMkbgg",
-    video_title: "【Once Upon a Katamari】 We Be Ballin' In a New Outfit",
-    video_timestamp: "2025-10-26T20:07:25.309+00:00",
-    total_yen: 116502,
-  },
-  {
-    video_id: "Ipk16R-TznI",
-    video_title: "【Heavy Rain】 There's a JASON in All of Us",
-    video_timestamp: "2025-10-28T19:59:53.355+00:00",
-    total_yen: 62247,
-  },
-  {
-    video_id: "F62QDBO-mxM",
-    video_title: "【Heavy Rain】 FINDING MY SHAUN",
-    video_timestamp: "2025-10-29T19:58:48+00:00",
-    total_yen: 59629,
-  },
-  {
-    video_id: "m73wkwQNl2I",
-    video_title: "Halloween Night with HoloAdvent【VRChat】",
-    video_timestamp: "2025-11-01T01:01:37.399+00:00",
-    total_yen: 13604,
-  },
-  {
-    video_id: "dcShhiwl82c",
-    video_title:
-      "Toy-Sized Heroes in a Horror Toy Story【Little Nightmares 3】",
-    video_timestamp: "2025-10-27T18:57:44+00:00",
-    total_yen: 12270,
-  },
-  {
-    video_id: "Mj7JJQGWsNc",
-    video_title:
-      "Building My Platonic Digi-Male Polycule【Digimon Story: Time Stranger】",
-    video_timestamp: "2025-11-04T00:38:22.484+00:00",
-    total_yen: 1540,
-  },
-  {
-    video_id: "_GUWfxJzXP0",
-    video_title:
-      "My Bug Will Turn into a Vaguely Hot 4 Legged Freak 【Digimon Story: Time Stranger】",
-    video_timestamp: "2025-11-04T22:07:24.587+00:00",
-    total_yen: 840,
-  },
-];
-// const { totalYen, avgYenPerSC, avgYenPerStream } =
-// await getChannelMetrics(channelId);
-const { totalYen, avgYenPerSC, avgYenPerStream } = {
-  totalYen: 177322,
-  avgYenPerSC: 1144.0129032258064,
-  avgYenPerStream: 35464.4,
-};
+const topDonor = await getChannelSuperchatTopDonor(channelId);
+const data = await getChannelSuperchatSummary(channelId);
+const { totalYen, avgYenPerSC, avgYenPerStream } =
+  await getChannelMetrics(channelId);
 ---
 
 <Layout title={streamer.name}>
