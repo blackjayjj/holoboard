@@ -2,11 +2,13 @@
 interface Streamer {
   url: string;
   name: string;
+  channelId: string;
 }
 
 interface Props {
   text: string;
   streamers: Streamer[];
+  availableChannels: Set<string>
 }
 
 const { text } = Astro.props;
@@ -56,23 +58,46 @@ const scriptVars = { componentId };
     aria-labelledby={`menu-toggle-${componentId}`}
   >
     {
-      Astro.props.streamers.map((streamer) => (
-        <li role="none">
-          <a
-            href={streamer.url}
-            role="menuitem"
-            class:list={[
-              "block py-2 text-sm",
-              "pl-4 pr-4",
-              "border-l-4",
-              "font-medium",
-              "hover:border-l-accent-nav-item-active",
-            ]}
-          >
-            {streamer.name}
-          </a>
-        </li>
-      ))
+      Astro.props.streamers.map((streamer) => {
+        const isAvailable = Astro.props.availableChannels.has(streamer.channelId);
+
+        const baseClasses = [
+          "block py-2 text-sm pl-4 pr-4 border-l-4 font-medium",
+        ];
+        
+        const activeClasses = [
+          ...baseClasses,
+          "text-text-primary hover:border-l-accent-nav-item-active",
+        ];
+
+        const inactiveClasses = [
+          ...baseClasses,
+          "text-gray-500 cursor-not-allowed",
+          "pointer-events-none",
+        ];
+
+        return (
+          <li role="none">
+            {isAvailable ? (
+              <a
+                href={streamer.url}
+                role="menuitem"
+                class:list={activeClasses}
+              >
+                {streamer.name}
+              </a>
+            ) : (
+              <span 
+                role="menuitem"
+                aria-disabled="true"
+                class:list={inactiveClasses}
+              >
+                {streamer.name}
+              </span>
+            )}
+          </li>
+        );
+      })
     }
   </ul>
 </>

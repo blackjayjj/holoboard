@@ -3,12 +3,8 @@ import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
 import { channelIdToNameMap } from "../../lib/streamers";
 import Layout from "../../layouts/Layout.astro";
 import {
-  getVideoMetadata,
   getAllVideoIds,
-  getSuperchatMetrics,
-  getVideoSuperchats,
-  getTopDonors,
-  getTimeSeriesMetrics,
+  getVideoCache
 } from "../../lib/supabase";
 import Title from "../../components/Title.astro";
 import Card from "../../components/Card.astro";
@@ -26,23 +22,21 @@ export const getStaticPaths = (async () => {
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const videoId = Astro.params.video_id;
-
+const data = await getVideoCache(videoId);
 const {
   timestamp,
   title,
   channel_id: channelId,
-} = await getVideoMetadata(videoId);
-
-const { totalYen, scCount } = await getSuperchatMetrics(videoId);
+} = data.metadata;
+const { totalYen, scCount } = data.metrics;
+const superchats = data.superchats;
+const topDonors = data.top_donors;
+const cumSums = data.timeseries;
 
 const average_yen = scCount > 0 ? totalYen / scCount : 0;
 const formattedTotalYen = yenFormatter.format(totalYen);
 const formattedAverageYen = yenFormatter.format(average_yen);
 
-const superchats = await getVideoSuperchats(videoId);
-const topDonors = await getTopDonors(videoId);
-
-const cumSums = await getTimeSeriesMetrics(videoId);
 
 const chartTimeSeries: { x: string; y: number }[] = [];
 

@@ -2,8 +2,9 @@
 import "../styles/global.css";
 import LeftNavItem from "../components/LeftNavItem.astro";
 import { STREAMER_DATA } from "../lib/streamers";
-
+import { getAvailableChannels } from "../lib/supabase";
 const { title } = Astro.props;
+const availableChannels = await getAvailableChannels();
 ---
 
 <!doctype html>
@@ -30,7 +31,7 @@ const { title } = Astro.props;
       <nav class="flex flex-col gap-3 mt-4">
         {
           STREAMER_DATA.map((obj) => (
-            <LeftNavItem text={obj.text} streamers={obj.streamers} />
+            <LeftNavItem text={obj.text} streamers={obj.streamers} availableChannels={availableChannels} />
           ))
         }
       </nav>

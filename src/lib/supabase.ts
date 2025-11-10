@@ -219,6 +219,78 @@ export async function getAllVideoIds() {
   return data;
 }
 
+export async function getAvailableChannels() {
+  if (DEV_MODE) {
+    return new Set([
+      "UCp6993wxpyDPHUpavwDFqgg",
+      "UC-hM6YJuNYVAmUWxeIr9FeA",
+      "UC0TXe_LYZ4scaW2XMyi5_kw",
+      "UCOyYb1c43VlX9rc_lT6NKQw",
+      "UCFTLzh12_nrtzqBPsTCqenA",
+      "UC1CfXB_kRs3C-zaeTG3oGyg",
+      "UCdn5BQ06XqgXoAxIhbqw5Rg",
+      "UCQ0UDLQCjY0rmuxCDE38FGg",
+      "UC1suqwovbL1kzsoaZgFZLKg",
+      "UCp-5t9SrOQwXMU7iIjQfARg",
+      "UChAnqc_AY5_I3Px5dig3X1Q",
+      "UC1DCedRgGHBdm81E1llLhOQ",
+      "UCvInZx9h3jC2JzsIzoOebWg",
+      "UCdyqAaZDKHXg4Ahi7VENThQ",
+      "UCCzUftO8KOVkV4wQG1vkUvg",
+      "UCqm3BQLlJfvkTsX_hvm0UmA",
+      "UC1uv2Oq6kNxgATlCiez59hw",
+      "UCa9Y57gfeY0Zro_noHRVrnw",
+      "UCFKOVgVbGmX65RxO3EtH3iw",
+      "UCAWSyEs_Io8MtpY3m-zqILA",
+      "UCUKD-uaobj9jiqB-VXt71mA",
+      "UCK9V2B22uJYu3N7eR_BT9QA",
+      "UC6eWCld0KwmyHFbAqK3V-Rw",
+      "UC_vMYWcDjmfdpH6r4TTn1MQ",
+      "UCP0BspO_AMEe3aQqqpo89Dg",
+      "UCAoy6rzhSf4ydcYjJw3WoVg",
+      "UCYz_5n-uDuChHtLo7My1HnQ",
+      "UC727SQYUvx5pDDGQpTICNWg",
+      "UChgTyjG-pdNvxxhdsXfHQ5Q",
+      "UCTvHWSfBZgtxE4sILOaurIQ",
+      "UCZLZ8Jjx_RN2CXloOmgTHVg",
+      "UCL_qhgtOy0dy1Agp8vkySQg",
+      "UCHsx4Hqa-1ORjQTh9TYDhww",
+      "UCMwGHR0BTZuLsmjY_NT5Pwg",
+      "UC8rcEBzJSleTkf_-agPM20g",
+      "UCgmPnx-EEeOrZSg5Tiw7ZRQ",
+      "UCgnfPPb9JI3e9A4cXHnWbyg",
+      "UC9p_lqQ0FEDz327Vgf5JwqA",
+      "UC_sFNM0z0MWm9A6WlKPuMMg",
+      "UCt9H_RpQzhxzlyBxFqrdHqA",
+      "UCW5uhrG1eCBYditmhL0Ykjw",
+      "UCDHABijvPBnJm7F-KlNME3w",
+      "UCvN5h1ShZtc7nly3pezRayg",
+      "UCl69AEx4MdqMZH7Jtsm7Tig",
+      "UCWQtYtq9EOB4-I5P-3fh8lA",
+      "UC1iA6_NT4mtAcIII6ygrvCw",
+      "UC9LSiN9hXI55svYEBrrK-tw",
+      "UCjk2nKmHzgH5Xy-C5qYRd5A",
+      "UCKMWFR6lAstLa7Vbf5dH7ig",
+      "UCGzTVXqMQHa4AgJVJIVvtDQ",
+      "UCJFZiqLMntJufDCHc6bQixg",
+      "UC7fk0CB07ly8oSl0aqKkqFg",
+      "UCvaTdHTWBGv3MKj3KVqJVCw",
+      "UCjLEmnpCNeisMxy134KPwWw",
+      "UCu2n3qHuOuQIygREMnWeQWg",
+      "UCfrWoRGlawPQDQxxeIDRP0Q",
+    ]);
+  }
+
+  const { data, error } = await supabase
+    .from("video_metadata")
+    .select("channel_id");
+
+  if (error) {
+    throw Error(error);
+  }
+  return new Set(data.map((row) => row.channel_id));
+}
+
 interface VideoMetrics {
   totalYen: number;
   scCount: number;
@@ -624,6 +696,145 @@ export async function getSuperchatCount(): number {
   if (error) {
     console.error("Error calling RPC function:", error);
     return [];
+  }
+  return data;
+}
+
+export async function getVideoCache(videoId: string) {
+  if (DEV_MODE) {
+    return {
+      id: "qoNEDzHqAuU",
+      metadata: {
+        title:
+          "【新衣装お披露目】遂にこの時が来た…ッ！！【百鬼あやめ/ホロライブ】",
+        timestamp: "2025-11-02T13:33:24.844+00:00",
+        channel_id: "UC7fk0CB07ly8oSl0aqKkqFg",
+      },
+      metrics: { scCount: 290, totalYen: 743730 },
+      superchats: [
+        {
+          id: 29462,
+          name: "@SHiNker74",
+          timestamp: "2025-11-02T13:33:24.846+00:00",
+          yen_amount: 10000,
+        },
+        {
+          id: 29722,
+          name: "@百鬼神-j8z",
+          timestamp: "2025-11-02T13:33:24.869+00:00",
+          yen_amount: 1000,
+        },
+        {
+          id: 29733,
+          name: "@Zaki_6560",
+          timestamp: "2025-11-02T13:33:24.87+00:00",
+          yen_amount: 500,
+        },
+        {
+          id: 29734,
+          name: "@ヘルニア刹祐",
+          timestamp: "2025-11-02T13:33:24.87+00:00",
+          yen_amount: 200,
+        },
+        {
+          id: 29735,
+          name: "@柚芽_YUME",
+          timestamp: "2025-11-02T13:33:24.87+00:00",
+          yen_amount: 500,
+        },
+      ],
+      top_donors: [
+        { total_yen: 50000, donor_name: "@kanade0524" },
+        { total_yen: 50000, donor_name: "@Met_Komori" },
+        { total_yen: 20000, donor_name: "@ネイビール" },
+        { total_yen: 15800, donor_name: "@涼介-c4x" },
+        { total_yen: 15800, donor_name: "@トト-e4y" },
+        { total_yen: 15800, donor_name: "@mm-dd3qe" },
+        { total_yen: 15800, donor_name: "@ユキミカズチ" },
+        { total_yen: 15800, donor_name: "@ちゃこ0612" },
+        { total_yen: 15800, donor_name: "@ケッピw9h" },
+        { total_yen: 15628, donor_name: "@dominic_izayoi" },
+      ],
+      timeseries: [
+        {
+          cumulative_yen: 586711,
+          minute_timestamp: "2025-11-01T12:33:00+00:00",
+        },
+        {
+          cumulative_yen: 598031,
+          minute_timestamp: "2025-11-01T12:34:00+00:00",
+        },
+        {
+          cumulative_yen: 600334,
+          minute_timestamp: "2025-11-01T12:35:00+00:00",
+        },
+        {
+          cumulative_yen: 612934,
+          minute_timestamp: "2025-11-01T12:36:00+00:00",
+        },
+        {
+          cumulative_yen: 631234,
+          minute_timestamp: "2025-11-01T12:37:00+00:00",
+        },
+        {
+          cumulative_yen: 649662,
+          minute_timestamp: "2025-11-01T12:38:00+00:00",
+        },
+        {
+          cumulative_yen: 677462,
+          minute_timestamp: "2025-11-01T12:39:00+00:00",
+        },
+        {
+          cumulative_yen: 677622,
+          minute_timestamp: "2025-11-01T12:40:00+00:00",
+        },
+        {
+          cumulative_yen: 695837,
+          minute_timestamp: "2025-11-01T12:41:00+00:00",
+        },
+        {
+          cumulative_yen: 696037,
+          minute_timestamp: "2025-11-01T12:42:00+00:00",
+        },
+        {
+          cumulative_yen: 696237,
+          minute_timestamp: "2025-11-01T12:43:00+00:00",
+        },
+        {
+          cumulative_yen: 699249,
+          minute_timestamp: "2025-11-01T12:44:00+00:00",
+        },
+        {
+          cumulative_yen: 700369,
+          minute_timestamp: "2025-11-01T12:45:00+00:00",
+        },
+        {
+          cumulative_yen: 702872,
+          minute_timestamp: "2025-11-01T12:47:00+00:00",
+        },
+        {
+          cumulative_yen: 703192,
+          minute_timestamp: "2025-11-01T12:48:00+00:00",
+        },
+        {
+          cumulative_yen: 703692,
+          minute_timestamp: "2025-11-01T12:49:00+00:00",
+        },
+        {
+          cumulative_yen: 743730,
+          minute_timestamp: "2025-11-02T13:33:00+00:00",
+        },
+      ],
+      last_updated: "2025-11-10T17:45:38.21",
+    };
+  }
+  const { data, error } = await supabase
+    .from("video_cache")
+    .select("*")
+    .eq("id", videoId)
+    .maybeSingle();
+  if (error) {
+    throw Error(error);
   }
   return data;
 }
