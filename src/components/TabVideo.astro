@@ -1,0 +1,82 @@
+---
+import VideoTable from "./VideoTable.astro";
+
+const { topVideos, recentVideos, loading } = Astro.props;
+
+---
+
+<div id="tabbed-container">
+  <div class="flex mb-4">
+    <button 
+      class="tab-button cursor-pointer inline-block w-full p-3 rounded-tl-lg bg-bg-tertiary" 
+      data-tab="top" 
+      aria-selected="true"
+      role="tab"
+    >
+      Top Videos
+    </button>
+    <button 
+      class="tab-button cursor-pointer inline-block w-full p-3 rounded-tr-lg bg-bg-tertiary" 
+      data-tab="recent"
+      aria-selected="false"
+      role="tab"
+    >
+      Recent Videos
+    </button>
+  </div>
+
+  <div>
+    <div id="tab-top" class="tab-panel active">
+      <VideoTable data={topVideos} loading={loading}/>
+    </div>
+
+    <div id="tab-recent" class="tab-panel hidden">
+      <VideoTable data={recentVideos} loading={loading}/>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('tabbed-container');
+    if (!container) return;
+
+    const buttons = container.querySelectorAll('.tab-button');
+    const panels = container.querySelectorAll('.tab-panel');
+
+    function activateTab(tabName: string) {
+      buttons.forEach(button => {
+        const isActive = button.getAttribute('data-tab') === tabName;
+        button.setAttribute('aria-selected', isActive.toString());
+        const activeClasses = ['text-primary']
+        const inActiveClasses = ['border-b-2', 'border-border-subtle', 'font-semibold']
+        if (isActive) {
+          button.classList.remove(...activeClasses);
+          button.classList.add(...inActiveClasses);
+        } else {
+          button.classList.add(...activeClasses);
+          button.classList.remove(...inActiveClasses);
+        }
+      });
+
+      panels.forEach(panel => {
+        const panelName = panel.id.replace('tab-', '');
+        if (panelName === tabName) {
+          panel.classList.remove('hidden');
+          panel.classList.add('active');
+        } else {
+          panel.classList.add('hidden');
+          panel.classList.remove('active');
+        }
+      });
+    }
+
+    activateTab('top'); 
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        activateTab(button.getAttribute('data-tab') as string);
+      });
+    });
+  });
+</script>

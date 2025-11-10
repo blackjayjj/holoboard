@@ -1,0 +1,12 @@
+@config "../../astro.config.mjs";
+@import "tailwindcss";
+
+.scrollbar-hide {
+  /* For Firefox */
+  scrollbar-width: none;
+}
+
+/* For Chrome, Safari, and Edge */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

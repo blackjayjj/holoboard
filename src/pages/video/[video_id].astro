@@ -1,0 +1,205 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import { channelIdToNameMap } from "../../lib/streamers";
+import Layout from "../../layouts/Layout.astro";
+import {
+  getVideoMetadata,
+  getAllVideoIds,
+  getSuperchatMetrics,
+  getVideoSuperchats,
+  getTopDonors,
+  getTimeSeriesMetrics,
+} from "../../lib/supabase";
+import Title from "../../components/Title.astro";
+import Card from "../../components/Card.astro";
+import TopDonors from "../../components/TopDonors.astro";
+import SummaryTable from "../../components/SummaryTable.astro";
+import SuperchatTable from "../../components/SuperchatTable.astro";
+import { yenFormatter } from "../../lib/formatters";
+
+interface VideoData {
+  id: string;
+  timestamp: string;
+  title: string;
+}
+
+export const getStaticPaths = (async () => {
+  const data = await getAllVideoIds();
+  return (data || []).map((video) => ({
+    params: { video_id: video.id },
+  }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const videoId = Astro.params.video_id;
+
+// const data = await getVideoMetadata(videoId);
+const data = {
+  timestamp: "2025-10-21T13:03:58.742+00:00",
+  title: "【 MOTHER 】完全初見のMOTHER。#４【 ホロライブ / 大神ミオ 】",
+  channel_id: "UCp-5t9SrOQwXMU7iIjQfARg",
+};
+const { timestamp, title, channel_id: channelId } = data;
+
+// const {totalYen, scCount} = await getSuperchatMetrics(videoId)
+const { totalYen, scCount } = {
+  totalYen: 458760, // Total Yen amount
+  scCount: 955, // Total number of Superchats
+};
+
+const average_yen = scCount > 0 ? totalYen / scCount : 0;
+const formattedTotalYen = yenFormatter.format(totalYen);
+const formattedAverageYen = yenFormatter.format(average_yen);
+
+const superchats = await getVideoSuperchats(videoId);
+const topDonors = await getTopDonors(videoId);
+
+// const cumSums = await getTimeSeriesMetrics(videoId);
+const cumSums = [
+  {
+    minute_timestamp: "2025-10-21T13:03:00+00:00",
+    cumulative_yen: 1600,
+  },
+  {
+    minute_timestamp: "2025-10-21T13:08:00+00:00",
+    cumulative_yen: 2674,
+  },
+  {
+    minute_timestamp: "2025-10-21T15:10:00+00:00",
+    cumulative_yen: 3174,
+  },
+  {
+    minute_timestamp: "2025-10-21T15:12:00+00:00",
+    cumulative_yen: 5143,
+  },
+];
+
+const chartTimeSeries: { x: string; y: number }[] = [];
+
+[
+  { minute_timestamp: cumSums[0].minute_timestamp, cumulative_yen: 0 },
+  ...cumSums,
+].forEach((row) => {
+  chartTimeSeries.push({
+    x: row.minute_timestamp,
+    y: row.cumulative_yen,
+  });
+});
+
+const plotlyXData = chartTimeSeries.map((item) => item.x);
+const plotlyYData = chartTimeSeries.map((item) => item.y);
+---
+
+<Layout title={channelIdToNameMap[channelId]}>
+  <div class="flex flex-col gap-1">
+    <h2 class="text-lg font-bold">{title}</h2>
+    <p class="text-xs text-gray-400">
+      {
+        new Date(timestamp).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      }
+    </p>
+  </div>
+  <div class="space-y-4">
+    <SummaryTable
+      data={[
+        { text: formattedTotalYen, label: "Total Yen" },
+        { text: scCount.toLocaleString(), label: "Total SCs" },
+        { text: formattedAverageYen, label: "Average SC" },
+      ]}
+    />
+    <div class="flex flex-wrap lg:flex-nowrap gap-4">
+      <div class="w-full lg:w-[70%] h-80">
+        <div id="cumulativeYenChart"></div>
+      </div>
+      <div class="w-full lg:w-[30%] flex flex-col gap-4">
+        <Card>
+          <TopDonors
+            data={topDonors.map((obj) => ({
+              key: obj.donor_name,
+              yen: obj.total_yen,
+            }))}
+            title="Top Donors"
+          />
+        </Card>
+      </div>
+    </div>
+    <Card>
+      <Title>Superchats</Title>
+      <div
+        class="h-96 overflow-y-auto scrollbar-hide scrollbar-hide::-webkit-scrollbar"
+      >
+        <SuperchatTable superchats={superchats} />
+      </div>
+    </Card>
+  </div>
+</Layout>
+
+<script src="https://cdn.plot.ly/plotly-3.2.0.min.js" charset="utf-8"></script>
+
+<script define:vars={{ plotlyXData, plotlyYData }}>
+  window.addEventListener("load", function () {
+    const trace1 = {
+      x: plotlyXData,
+      y: plotlyYData,
+      type: "scatter",
+      mode: "lines",
+      line: {
+        color: "#3380FF",
+        shape: "linear",
+      },
+      fill: "tozeroy",
+      fillcolor: "rgba(51, 128, 255, 0.2)",
+      marker: {
+        color: "#3380FF",
+        size: 3,
+      },
+    };
+
+    const layout = {
+      autosize: true,
+      height: 320,
+      margin: { t: 20, r: 20, b: 20, l: 60 },
+      showlegend: false,
+      paper_bgcolor: "transparent",
+      plot_bgcolor: "transparent",
+      yaxis: {
+        rangemode: "tozero",
+        tickfont: {
+          color: "#AAAAAA",
+        },
+        tickprefix: "¥",
+        showgrid: false,
+        zeroline: false,
+        tickformat: ",",
+      },
+      xaxis: {
+        type: "date",
+        tickfont: {
+          color: "#AAAAAA",
+        },
+        nticks: 5,
+        showgrid: false,
+        zeroline: false,
+        tickformat: "%H:%M",
+      },
+      hoverlabel: {
+        bgcolor: "#424549",
+        font: {
+          color: "#E0E0E0",
+        },
+        bordercolor: "#818385",
+      },
+    };
+
+    const config = {
+      responsive: true,
+      displayModeBar: false,
+    };
+
+    Plotly.newPlot("cumulativeYenChart", [trace1], layout, config);
+  });
+</script>

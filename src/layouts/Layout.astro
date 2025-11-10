@@ -1,22 +1,168 @@
+---
+import "../styles/global.css";
+import LeftNavItem from "../components/LeftNavItem.astro";
+import { STREAMER_DATA } from "../lib/streamers";
+
+const { title } = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<html lang="en" class="bg-primary">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | holoboard</title>
+  </head>
+  <body
+    class="bg-bg-primary text-text-primary h-screen lg:grid lg:grid-cols-[250px_minmax(0,_1fr)]"
+  >
+    <aside
+      id="mobile-sidebar"
+      class="fixed top-0 left-0 w-[250px] h-full bg-bg-secondary border-r border-border-subtle p-4 overflow-y-auto scrollbar-hide
+             transform -translate-x-full transition-transform duration-300 ease-in-out z-40
+             lg:relative lg:translate-x-0 lg:block lg:h-screen"
+    >
+      <a href="/" class="font-bold text-white">
+        <span class="text-2xl tracking-tight">holoboard</span>
+      </a>
+      <nav class="flex flex-col gap-3 mt-4">
+        {
+          STREAMER_DATA.map((obj) => (
+            <LeftNavItem text={obj.text} streamers={obj.streamers} />
+          ))
+        }
+      </nav>
+    </aside>
+
+    <div
+      id="mobile-backdrop"
+      class="fixed inset-0 bg-black bg-opacity-50 z-30 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
+      aria-hidden="true"
+    >
+    </div>
+
+    <main class="p-4 overflow-y-auto">
+      <div
+        class="mb-4 -mx-4 -mt-4 relative h-[60px] flex items-center justify-center"
+      >
+        <svg
+          class="absolute inset-0 w-full h-full z-0"
+          viewBox="0 0 100 60"
+          preserveAspectRatio="none"
+        >
+          <path d="M 0 0 L 100 0 L 100 40 Q 50 75 0 40 Z" fill="#232529"></path>
+          <path
+            d="M 0 40 Q 50 75 100 40"
+            fill="none"
+            stroke="#818385"
+            stroke-width="1"></path>
+        </svg>
+
+        <button
+          id="hamburger-btn"
+          aria-expanded="false"
+          aria-controls="mobile-sidebar"
+          class="lg:hidden absolute left-4 z-20 p-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+          style="top: 50%; transform: translateY(-50%);"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+
+        <h1 class="relative z-10 font-bold">
+          <span class="text-lg md:text-xl">{title}</span>
+        </h1>
+      </div>
+      <slot />
+    </main>
+  </body>
 </html>
 
+<script is:inline>
+  const body = document.body;
+  const sidebar = document.getElementById("mobile-sidebar");
+  const backdrop = document.getElementById("mobile-backdrop");
+  const btn = document.getElementById("hamburger-btn");
+  let touchstartX = 0;
+  let touchendX = 0;
+
+  function toggleSidebar(open) {
+    const isOpen =
+      open === undefined ? !body.classList.contains("sidebar-open") : open;
+
+    if (isOpen) {
+      body.classList.add("sidebar-open");
+      sidebar.classList.remove("-translate-x-full");
+      backdrop.classList.add("opacity-60");
+      backdrop.classList.remove("pointer-events-none");
+      btn.setAttribute("aria-expanded", "true");
+    } else {
+      body.classList.remove("sidebar-open");
+      sidebar.classList.add("-translate-x-full");
+      backdrop.classList.remove("opacity-60");
+      backdrop.classList.add("pointer-events-none");
+      btn.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  btn.addEventListener("click", toggleSidebar);
+  backdrop.addEventListener("click", () => toggleSidebar(false));
+
+  // --- Swipe Handlers ---
+  body.addEventListener("touchstart", (e) => {
+    if (e.touches[0].clientX < 50 || body.classList.contains("sidebar-open")) {
+      touchstartX = e.touches[0].clientX;
+    } else {
+      touchstartX = 0; // Ignore touches not from the edge
+    }
+  });
+
+  body.addEventListener("touchend", (e) => {
+    if (touchstartX === 0) return;
+    touchendX = e.changedTouches[0].clientX;
+
+    const diff = touchendX - touchstartX;
+
+    // Swipe Right (Open)
+    if (diff > 50 && !body.classList.contains("sidebar-open")) {
+      // Must start near the left edge for swipe-to-open
+      if (touchstartX < 50) {
+        toggleSidebar(true);
+      }
+    }
+    // Swipe Left (Close)
+    else if (diff < -50 && body.classList.contains("sidebar-open")) {
+      toggleSidebar(false);
+    }
+
+    touchstartX = 0; // Reset
+  });
+</script>
+
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Prevent vertical scrolling when the sidebar is open on mobile */
+  /* This relies on the 'sidebar-open' class added by JavaScript */
+  body.sidebar-open {
+    overflow: hidden;
+  }
 </style>

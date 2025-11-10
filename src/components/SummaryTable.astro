@@ -1,0 +1,23 @@
+---
+interface Data {
+  text: string;
+  label: string;
+}
+
+interface Props {
+  data: Data[];
+}
+const { data } = Astro.props;
+---
+<div
+  class="mt-6 grid grid-cols-3 gap-4 text-center border-t border-b border-border-subtle py-4"
+>
+  {
+    data.map(({ text, label }) => (
+      <div class="flex flex-col">
+        <span class="text-sm font-semibold text-gray-300">{label}</span>
+        <span class="text-xl font-bold">{text}</span>
+      </div>
+    ))
+  }
+</div>

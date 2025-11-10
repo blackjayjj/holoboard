@@ -1,0 +1,31 @@
+---
+import Title from "./Title.astro";
+import AorDiv from "./AorDiv.astro";
+const { data, title } = Astro.props;
+---
+
+<Title>{title}</Title>
+<div>
+  {
+    (data || []).map((obj, index) => (
+      <AorDiv
+        href={obj.url}
+        key={obj.key}
+        class="flex justify-between items-center py-2"
+      >
+        <div class="flex items-center">
+          <span class="text-sm font-medium mr-2  w-4 text-left">
+            {index + 1}.
+          </span>
+          <span class="text-sm text-text-primary truncate max-w-[120px]">
+            {obj.key}
+          </span>
+        </div>
+
+        <span class="text-sm font-semibold whitespace-nowrap text-right">
+          ¥{obj.yen.toLocaleString()}
+        </span>
+      </AorDiv>
+    ))
+  }
+</div>

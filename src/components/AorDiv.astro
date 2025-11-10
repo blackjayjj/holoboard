@@ -1,0 +1,19 @@
+---
+const { href, class: containerClass } = Astro.props;
+---
+
+{
+  href ? (
+    <a
+      href={href}
+      key={href}
+      class={containerClass}
+    >
+      <slot />
+    </a>
+  ) : (
+    <div class={containerClass}>
+      <slot />
+    </div>
+  )
+}

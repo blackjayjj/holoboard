@@ -1,0 +1,56 @@
+---
+import { Image } from "astro:assets";
+const { data, loading } = Astro.props;
+---
+
+<table class="w-full table-auto">
+  <thead>
+    <tr class="h-0 invisible">
+      <th class="w-3/4"></th>
+      <th class="w-1/4"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      (data || []).slice(0, 5).map((video) => (
+        <tr
+          key={video.video_id}
+          class="cursor-pointer"
+          onclick={`window.location.href='/video/${video.video_id}'`}
+        >
+          <td class="py-1 pr-4 text-left max-w-0">
+            <a
+              href={`/video/${video.video_id}`}
+              class="flex items-center space-x-3"
+              aria-label={`View details for ${video.video_title}`}
+            >
+              <Image
+                src={`https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`}
+                alt={`Thumbnail for ${video.video_title}`}
+                class="w-20 h-auto rounded-md object-cover flex-shrink-0"
+                width={80}
+                height={45}
+                loading={loading}
+              />
+              <div class="min-w-0 flex flex-col gap-0.5">
+                <p class="text-sm leading-snug line-clamp-2 max-w-full">
+                  {video.video_title}
+                </p>
+                <p class="text-xs text-gray-400 whitespace-nowrap">
+                  {new Date(video.video_timestamp).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+            </a>
+          </td>
+          <td class="text-right font-semibold whitespace-nowrap">
+            ¥{video.total_yen.toLocaleString()}
+          </td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
