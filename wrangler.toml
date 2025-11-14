@@ -1,0 +1,6 @@
+name = "holoboard"
+compatibility_date = "2025-11-14"
+
+[assets]
+# Astro's default build output directory
+directory = "./dist"
